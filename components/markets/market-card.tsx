@@ -17,12 +17,12 @@ export default function MarketCard({ market }: MarketCardProps) {
 
   return (
     <Link href={`/markets/${market.id}`}>
-      <Card className="group relative h-full cursor-pointer overflow-hidden border-0 bg-gradient-to-br from-white via-slate-50 to-emerald-50/30 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-emerald-500/20">
+      <Card className="group relative h-full cursor-pointer overflow-hidden border-0 bg-gradient-to-br from-slate-800/90 via-slate-800/80 to-emerald-900/40 backdrop-blur-sm transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-emerald-500/30">
         {/* Animated gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 via-transparent to-teal-400/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-teal-500/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
         
         {/* Glowing border effect */}
-        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-emerald-500/20 via-teal-400/20 to-green-400/20 opacity-0 blur transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-emerald-500/30 via-teal-500/30 to-green-500/30 opacity-0 blur transition-opacity duration-500 group-hover:opacity-100" />
         
         <div className="relative z-10 p-6">
           {/* Header */}
@@ -30,20 +30,20 @@ export default function MarketCard({ market }: MarketCardProps) {
             <div className="mb-3 flex items-center justify-between">
               <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition-all duration-300 ${
                 market.category === 'group-stage'
-                  ? 'bg-amber-100 text-amber-700 ring-1 ring-amber-300 group-hover:bg-amber-200'
-                  : 'bg-rose-100 text-rose-700 ring-1 ring-rose-300 group-hover:bg-rose-200'
+                  ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-400/30 group-hover:bg-amber-500/30'
+                  : 'bg-rose-500/20 text-rose-300 ring-1 ring-rose-400/30 group-hover:bg-rose-500/30'
               }`}>
                 {market.category === 'group-stage' ? '⚽ Group Stage' : '🏆 Knockout'}
               </span>
-              <div className="flex items-center gap-1 text-xs text-slate-600">
+              <div className="flex items-center gap-1 text-xs text-slate-400">
                 <Clock className="h-3.5 w-3.5" />
                 <span className="font-medium">{timeDisplay}</span>
               </div>
             </div>
-            <h3 className="mb-2 text-xl font-bold leading-tight text-slate-900 transition-colors duration-300 group-hover:text-emerald-700">
+            <h3 className="mb-2 text-xl font-bold leading-tight text-white transition-colors duration-300 group-hover:text-emerald-400">
               {market.title}
             </h3>
-            <p className="text-sm text-slate-600">{market.description}</p>
+            <p className="text-sm text-slate-400">{market.description}</p>
           </div>
 
           {/* Prediction Odds */}
@@ -82,21 +82,21 @@ export default function MarketCard({ market }: MarketCardProps) {
           </div>
 
           {/* Footer Stats */}
-          <div className="flex items-center justify-between rounded-lg bg-slate-100 p-3 ring-1 ring-slate-200">
+          <div className="flex items-center justify-between rounded-lg bg-slate-900/60 p-3 ring-1 ring-slate-700/50">
             <div className="flex items-center gap-1.5">
-              <TrendingUp className="h-4 w-4 text-emerald-600" />
+              <TrendingUp className="h-4 w-4 text-emerald-400" />
               <div>
                 <div className="text-xs text-slate-500">Volume</div>
-                <div className="text-sm font-bold text-slate-900">
+                <div className="text-sm font-bold text-white">
                   ${(market.volume / 1000000).toFixed(2)}M
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
-              <Users className="h-4 w-4 text-emerald-600" />
+              <Users className="h-4 w-4 text-emerald-400" />
               <div className="text-right">
                 <div className="text-xs text-slate-500">Traders</div>
-                <div className="text-sm font-bold text-slate-900">
+                <div className="text-sm font-bold text-white">
                   {Math.floor(Math.random() * 500 + 100)}
                 </div>
               </div>
