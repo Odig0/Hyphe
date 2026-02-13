@@ -8,20 +8,27 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Copy, LogOut, Wallet, TrendingUp, Trophy } from 'lucide-react'
 import { useState } from 'react'
+import { useConnect, useConnection, useDisconnect } from 'wagmi'
 
 export default function ProfilePage() {
-  const [connected, setConnected] = useState(false)
   const [copied, setCopied] = useState(false)
+  const { connect, connectors, isPending } = useConnect()
+  const { disconnect } = useDisconnect()
+  const { address, chainId, isConnected } = useConnection()
 
-  const mockAddress = '0x1234567890abcdef1234567890abcdef12345678'
-  const mockBalance = 12456.78
   const participatedMarkets = mockMarkets.slice(0, 3)
   const ownedNFTs = mockNFTs
 
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(mockAddress)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    if (address) {
+      navigator.clipboard.writeText(address)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  const handleDisconnect = () => {
+    disconnect()
   }
 
   return (
@@ -37,14 +44,23 @@ export default function ProfilePage() {
             <Wallet className="h-8 w-8 text-primary opacity-50" />
           </div>
 
-          {!connected ? (
+          {!isConnected ? (
             <div className="bg-background/50 rounded-lg p-8 text-center">
               <Wallet className="h-12 w-12 text-primary mx-auto mb-4 opacity-50" />
               <h2 className="text-xl font-semibold text-foreground mb-2">Connect Your Wallet</h2>
               <p className="text-muted-foreground mb-6">Connect a wallet to view your profile, portfolio, and transactions</p>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                Connect Wallet
-              </Button>
+              <div className="flex flex-col gap-3">
+                {connectors.map((connector) => (
+                  <Button
+                    key={connector.uid}
+                    onClick={() => connect({ connector })}
+                    disabled={isPending}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                  >
+                    {isPending ? 'Connecting...' : `Connect ${connector.name}`}
+                  </Button>
+                ))}
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
@@ -53,30 +69,36 @@ export default function ProfilePage() {
                 <div>
                   <p className="text-sm text-muted-foreground mb-2">Wallet Address</p>
                   <div className="flex items-center gap-2 bg-background rounded-lg p-3">
-                    <code className="flex-1 text-sm font-mono text-foreground">{mockAddress}</code>
+                    <code className="flex-1 text-sm font-mono text-foreground truncate">
+                      {address}
+                    </code>
                     <button
                       onClick={handleCopyAddress}
                       className="p-2 hover:bg-muted rounded transition-colors"
-                      title="Copy address"
+                      title={copied ? 'Copied!' : 'Copy address'}
                     >
-                      <Copy className="h-4 w-4 text-muted-foreground" />
+                      <Copy className={`h-4 w-4 ${copied ? 'text-primary' : 'text-muted-foreground'}`} />
                     </button>
                   </div>
                 </div>
 
                 {/* Balance */}
                 <div>
-                  <p className="text-sm text-muted-foreground mb-2">Account Balance</p>
+                  <p className="text-sm text-muted-foreground mb-2">Chain</p>
                   <div className="bg-background rounded-lg p-3 flex items-center justify-between">
                     <div>
-                      <p className="text-2xl font-bold text-primary">${mockBalance.toFixed(2)}</p>
-                      <p className="text-xs text-muted-foreground">Available to trade</p>
+                      <p className="text-lg font-bold text-primary">{chainId}</p>
+                      <p className="text-xs text-muted-foreground">Connected network</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <Button variant="outline" className="w-full text-foreground border-border hover:bg-muted">
+              <Button 
+                variant="outline" 
+                onClick={handleDisconnect}
+                className="w-full text-foreground border-border hover:bg-muted"
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Disconnect Wallet
               </Button>

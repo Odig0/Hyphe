@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/layout/header'
 import Footer from '@/components/layout/footer'
+import { Web3Provider } from '@/components/providers/web3-provider'
 
 const _geist = Geist({ subsets: ['latin'] })
 const _geistMono = Geist_Mono({ subsets: ['latin'] })
@@ -27,9 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans antialiased flex flex-col min-h-screen bg-background text-foreground">
-        <Header />
-        <main className="flex-1 animate-in">{children}</main>
-        <Footer />
+        <Web3Provider>
+          <Header />
+          <main className="flex-1 animate-in">{children}</main>
+          <Footer />
+        </Web3Provider>
       </body>
     </html>
   )

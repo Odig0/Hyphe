@@ -2,11 +2,31 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Wallet } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useConnect, useConnection, useDisconnect } from 'wagmi'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [showConnectors, setShowConnectors] = useState(false)
+  const { connect, connectors, isPending } = useConnect()
+  const { address, isConnected } = useConnection()
+  const { disconnect } = useDisconnect()
+
+  const handleConnect = (connector: any) => {
+    connect({ connector })
+    setShowConnectors(false)
+  }
+
+  const formatAddress = (addr: string) => {
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card shadow-sm">
@@ -33,9 +53,41 @@ export default function Header() {
 
           {/* Wallet Button - Desktop */}
           <div className="hidden md:flex items-center gap-4">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              Connect Wallet
-            </Button>
+            {!isConnected ? (
+              <DropdownMenu open={showConnectors} onOpenChange={setShowConnectors}>
+                <DropdownMenuTrigger asChild>
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                    <Wallet className="h-4 w-4 mr-2" />
+                    Connect Wallet
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  {connectors.map((connector) => (
+                    <DropdownMenuItem
+                      key={connector.uid}
+                      onClick={() => handleConnect(connector)}
+                      disabled={isPending}
+                    >
+                      {isPending ? 'Connecting...' : connector.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="font-mono">
+                    <Wallet className="h-4 w-4 mr-2" />
+                    {formatAddress(address!)}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => disconnect()}>
+                    Disconnect
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -71,9 +123,36 @@ export default function Header() {
             >
               Profile
             </Link>
-            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-              Connect Wallet
-            </Button>
+            {!isConnected ? (
+              <div className="space-y-2">
+                {connectors.map((connector) => (
+                  <Button
+                    key={connector.uid}
+                    onClick={() => {
+                      handleConnect(connector)
+                      setMobileMenuOpen(false)
+                    }}
+                    disabled={isPending}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                  >
+                    <Wallet className="h-4 w-4 mr-2" />
+                    {isPending ? 'Connecting...' : `Connect ${connector.name}`}
+                  </Button>
+                ))}
+              </div>
+            ) : (
+              <Button
+                onClick={() => {
+                  disconnect()
+                  setMobileMenuOpen(false)
+                }}
+                variant="outline"
+                className="w-full font-mono"
+              >
+                <Wallet className="h-4 w-4 mr-2" />
+                {formatAddress(address!)}
+              </Button>
+            )}
           </nav>
         )}
       </div>
